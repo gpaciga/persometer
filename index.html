@@ -2,11 +2,35 @@
 
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="persometer.js"></script>
 </head>
 
 <h1>Hi</h1>
 
 <div id="quiz"></div>
-<script src="quiz.js"></script>
+<script type="text/javascript">
+
+const QUESTIONS = {
+    "q1": {text: "boo", scores: [2, 1, 0]},
+    "q2": {text: "foo", scores: [0, 2, 1]},
+    "q3": {text: "zoo", scores: [1, 0, 2]},
+};
+
+const RESULTS = [
+    {name: "Thing1", description: "the first thing", img: ""},
+    {name: "Thing2", description: "the second thing", img: ""},
+    {name: "Thing3", description: "the third thing", img: ""}
+]
+
+quiz = Persometer({
+    container: "quiz",
+    questions: QUESTIONS,
+    results: RESULTS,
+});
+
+quiz.validate();
+quiz.render();
+
+</script>
 
 </html>

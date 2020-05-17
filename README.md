@@ -4,4 +4,6 @@ A JavaScript library for creating personality tests based on agree/disagree stat
 
 Just experimental for now.
 
+Rhymes with "thermometer".
 
+Requires JQuery and a modern browser.
