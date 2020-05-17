@@ -2,39 +2,39 @@ const Persometer = config => {
 
     const CONTAINERID = config.container;
     const QUESTIONS = config.questions;
-    const RESULTS = config.results;
+    const RESULTS = config.results; // should rename this
     const POSSIBLE_RESULTS = RESULTS.length;
-    // idea: have a Myers-Briggs option: 4 "results" categories, +/- result determine each extreme, combine into 16 types
+
+    // todo: Myers-Briggs option: N "results" categories, +/- result determine each extreme, combine into 2^N types
 
     /**
      * Run some checks of the input parameters above to make sure they're all OK
      * Errors will just be logged to console. In the future we may throw an error.
      */
     const validate = () => {
-
-        const questions_have_right_score_lengths = () => {
-            let pass = true;
-            Object.keys(QUESTIONS).forEach(q => {
-                const scoreLength = QUESTIONS[q].scores.length;
-                if (scoreLength != POSSIBLE_RESULTS) {
-                    console.error(`NOT OK: Invalid score length ${scoreLength} for question ${q}, should be ${POSSIBLE_RESULTS}`);
-                    pass = false;
+        const tests = [
+            function questions_have_right_score_lengths() {
+                let pass = true;
+                Object.keys(QUESTIONS).forEach(q => {
+                    const scoreLength = QUESTIONS[q].scores.length;
+                    if (scoreLength != POSSIBLE_RESULTS) {
+                        console.error(`NOT OK: Invalid score length ${scoreLength} for question ${q}, should be ${POSSIBLE_RESULTS}`);
+                        pass = false;
+                    }
+                });
+                if (pass) { console.log("OK: question score lengths"); }
+            },
+            function all_results_have_nonzero_score() {
+                const maxima = get_maximum_scores();
+                const zeros = maxima.filter(x => x == 0);
+                if (zeros.length > 0) {
+                    console.error("NOT OK: Found zeros in the maximum scores:", maxima);
+                } else {
+                    console.log("OK: all results have some scores allocated");
                 }
-            });
-            if (pass) { console.log("OK: question score lengths"); }
-        }
-        questions_have_right_score_lengths();
-
-        const all_results_have_nonzero_score = () => {
-            const maxima = get_maximum_scores();
-            const zeros = maxima.filter(x => x == 0);
-            if (zeros.length > 0) {
-                console.error("NOT OK: Found zeros in the maximum scores:", maxima);
-            } else {
-                console.log("OK: all results have some scores allocated");
             }
-        }
-        all_results_have_nonzero_score();
+        ];
+        tests.forEach(test => test());
     };
 
     const handle_submit = (form, event) => {
