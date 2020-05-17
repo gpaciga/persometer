@@ -4,6 +4,13 @@ const Persometer = config => {
     const STATEMENTS = config.statements;
     const CATEGORIES = config.categories; // should rename this
 
+    // todo: make it look nice by default
+    // todo: allow inputing spares scores, probably by mapping to category IDs
+    // todo: option to normalize scores 0-1 instead of -1,1
+    // todo: option so disagree doesn't subtract the scores
+    // todo: option to use either/or instead of agree/disagree (since the math is all the same)
+    // todo: option to specify whether all answers are required or not
+    // todo: option to not normalize scores when picking the winner
     // todo: Myers-Briggs option: N "results" categories, +/- result determine each extreme, combine into 2^N types
 
     /**
@@ -36,14 +43,14 @@ const Persometer = config => {
         tests.forEach(test => test());
     };
 
-    const handle_submit = (form, event) => {
-        event.preventDefault(); // dont refresh the page
-        set_result_code($(form).serialize());
-        render_result(CONTAINERID, $(form).serializeArray());
-    };
-
-    const get_answers_from_code = () => {
-        const url = new URL(window.location.href);
+    /**
+     * Checks if there's a result code in the URL's query parameters, and if so
+     * generates the set of answers that would have created that result. If no
+     * code is present, returns false.
+     * @param {string} href
+     */
+    const get_answers_from_url = (href) => {
+        const url = new URL(href);
         const r = url.searchParams.get("r");
         if (!r) { return false; }
 
@@ -56,16 +63,36 @@ const Persometer = config => {
         return answers;
     };
 
+    /**
+     * Update the URL to reflect the user's unique result in a query parameter,
+     * so it can be easily copied and shared (or refreshed during development).
+     * @param {*} value
+     */
     const set_result_code = value => {
         const url = new URL(window.location.href);
         url.searchParams.set("r", value);
         window.history.pushState(null, document.title, url.href);
     };
 
+    /**
+     * Renders all the agree/disagree statements as a submittable form.
+     * @param {string} id of the container to render into
+     */
     const render_statements = (id) => {
         const div = document.getElementById(id);
         $(div).empty();
         const form = document.createElement("form");
+
+        // While submitting a form would put the answers into the query params
+        // by default anyway, the idea here is to eventually replace the full
+        // form data with a code that can be decoded into just the results,
+        // instead of including each individual answer.
+        const handle_submit = (form, event) => {
+            event.preventDefault(); // dont refresh the page
+            set_result_code($(form).serialize());
+            render_result(CONTAINERID, $(form).serializeArray());
+        };
+
         form.onsubmit = handle_submit.bind(this, form);
         div.append(form);
 
@@ -82,6 +109,12 @@ const Persometer = config => {
         $(form).append('<input type="submit" />');
     };
 
+    /**
+     * Renders the result based on the user's answer, including the best match
+     * and the relative scores in each category.
+     * @param {string} id of the container to render into
+     * @param {Object[]} answers the array of answers
+     */
     const render_result = (id, answers) => {
         const div = document.getElementById(id);
         $(div).empty();
@@ -97,6 +130,12 @@ const Persometer = config => {
         $(div).append(resetButton);
     };
 
+    /**
+     * Sums up the score arrays for each statement, adding the score if the
+     * user agreed with the statement or subtracting the score if they
+     * disagreed.
+     * @param {Object[]} answers the array of answers
+     */
     const add_scores = answers => {
         const total = new Array(CATEGORIES.length).fill(0);
 
@@ -113,6 +152,10 @@ const Persometer = config => {
         return total;
     };
 
+    /**
+     * Returns an array containing the maximum possible score in each category,
+     * for use in normalizing the scales.
+     */
     const get_maximum_scores = () => {
         const maxima = new Array(CATEGORIES.length).fill(0);
         STATEMENTS.forEach(s => {
@@ -123,6 +166,13 @@ const Persometer = config => {
         return maxima;
     };
 
+    /**
+     * Normalizes the actually scores based on the maximum possible range in
+     * each category, independently. If the user agrees to every statement,
+     * this will return an array of 1s. If the user disagrees with every
+     * statement, this will return an array of -1s.
+     * @param {number[]} raw_total in each category
+     */
     const normalize_results = raw_total => {
         // need to calculate the range of each possible answer
         const maxima = get_maximum_scores();
@@ -137,18 +187,32 @@ const Persometer = config => {
         return normalized;
     };
 
+    /**
+     * Returns the category object that the answers best match.
+     * @param {number[]} scores for each category
+     */
     const get_best_result = scores => {
         // ignoring ties and using the first match
         const ibest = scores.indexOf(Math.max(...scores));
         return CATEGORIES[ibest];
     };
 
+    /**
+     * Renders a blurb for the user's highest category given the scores.
+     * @param {Element} container to render the scores into
+     * @param {number[]} scores for each category
+     */
     const render_best_match = (container, scores) => {
         const match = get_best_result(scores);
         $(container).append(`<p><strong>${match.name}</strong></p>`);
         $(container).append(`<p>${match.description}</p>`);
     };
 
+    /**
+     * Writes out the table of each possible category and how the person scored.
+     * @param {Element} container to render the scores into
+     * @param {number[]} scores for each category
+     */
     const render_scores = (container, scores) => {
         const normalized_scores = normalize_results(scores);
         for (i = 0; i < CATEGORIES.length; i++) {
@@ -157,6 +221,10 @@ const Persometer = config => {
         }
     };
 
+    /**
+     * Renders a visual meter that is filled up based on the given value.
+     * @param {number} value from -1 to 1
+     */
     const score_meter_markup = value => {
 
         // Not very accessible since this is pure CSS, no readable text yet
@@ -179,8 +247,12 @@ const Persometer = config => {
         `;
     };
 
+    /**
+     * Renders either the statements or the results, depending on whether the
+     * url has a result code in it.
+     */
     const render = () => {
-        const answers = get_answers_from_code();
+        const answers = get_answers_from_url(window.location.href);
         if (answers) {
             render_result(CONTAINERID, answers);
         } else {
@@ -188,6 +260,9 @@ const Persometer = config => {
         }
     };
 
+    /**
+     * Clear any results and render the original questionnaire.
+     */
     const reset = () => {
         set_result_code("");
         render_statements(CONTAINERID);
