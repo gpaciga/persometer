@@ -1,0 +1,36 @@
+<html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="persometer.js"></script>
+</head>
+
+<h1>What fruit are you?</h1>
+
+<div id="container"></div>
+<script type="text/javascript">
+
+const statements = {
+    "q1": {text: "I like round things.", scores: [1, 1, -1]},
+    "q2": {text: "I enjoy peeling things.", scores: [0, 1, 1]},
+    "q3": {text: "Primary colours are the best colours.", scores: [1, -1, 1]},
+};
+
+const categories = [
+    {name: "Apple", description: "Round, red, and ready to eat.", img: ""},
+    {name: "Orange", description: "Round and peelable.", img: ""},
+    {name: "Banana", description: "Stays where you put it.", img: ""}
+]
+
+quiz = Persometer({
+    container: "container",
+    statements: statements,
+    categories: categories,
+});
+
+quiz.validate();
+quiz.render();
+
+</script>
+
+</html>
