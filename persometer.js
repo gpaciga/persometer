@@ -14,8 +14,8 @@ const Persometer = config => {
         const tests = [
             function statements_have_right_score_lengths() {
                 let pass = true;
-                Object.keys(STATEMENTS).forEach(s => {
-                    const scoreLength = STATEMENTS[s].scores.length;
+                STATEMENTS.forEach(s => {
+                    const scoreLength = s.scores.length;
                     if (scoreLength != CATEGORIES.length) {
                         console.error(`NOT OK: Invalid score length ${scoreLength} for statement ${s}, should be ${CATEGORIES.length}`);
                         pass = false;
@@ -69,12 +69,12 @@ const Persometer = config => {
         form.onsubmit = handle_submit.bind(this, form);
         div.append(form);
 
-        Object.keys(STATEMENTS).forEach(s => {
+        STATEMENTS.forEach((statement, index) => {
             $(form).append(`
                 <div class="statement">
-                    <div class="statement-text">${STATEMENTS[s].text}</div>
-                    Agree <input type="radio" name="${s}" value="1">
-                    Disagree <input type="radio" name="${s}" value="-1">
+                    <div class="statement-text">${statement.text}</div>
+                    Agree <input type="radio" name="${index}" value="1">
+                    Disagree <input type="radio" name="${index}" value="-1">
                 </div>
             `);
         })
@@ -103,7 +103,8 @@ const Persometer = config => {
         // if skipped, the statement id just won't appear in this list, so effectively coefficient=0
         answers.forEach(answer => {
             const coefficient = Number(answer.value);
-            const scores = STATEMENTS[answer.name].scores;
+            const statement = STATEMENTS[Number(answer.name)];
+            const scores = statement.scores;
             for (i = 0; i < CATEGORIES.length; i++) {
                 total[i] += coefficient * scores[i];
             }
@@ -114,9 +115,9 @@ const Persometer = config => {
 
     const get_maximum_scores = () => {
         const maxima = new Array(CATEGORIES.length).fill(0);
-        Object.keys(STATEMENTS).forEach(s => {
+        STATEMENTS.forEach(s => {
             for (i = 0; i < CATEGORIES.length; i++) {
-                maxima[i] += Math.abs(STATEMENTS[s].scores[i])
+                maxima[i] += Math.abs(s.scores[i])
             }
         });
         return maxima;
