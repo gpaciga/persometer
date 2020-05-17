@@ -7,25 +7,25 @@
 
 <h1>Hi</h1>
 
-<div id="quiz"></div>
+<div id="container"></div>
 <script type="text/javascript">
 
-const QUESTIONS = {
+const statements = {
     "q1": {text: "boo", scores: [2, 1, 0]},
     "q2": {text: "foo", scores: [0, 2, 1]},
     "q3": {text: "zoo", scores: [1, 0, 2]},
 };
 
-const RESULTS = [
+const categories = [
     {name: "Thing1", description: "the first thing", img: ""},
     {name: "Thing2", description: "the second thing", img: ""},
     {name: "Thing3", description: "the third thing", img: ""}
 ]
 
 quiz = Persometer({
-    container: "quiz",
-    questions: QUESTIONS,
-    results: RESULTS,
+    container: "container",
+    statements: statements,
+    categories: categories,
 });
 
 quiz.validate();

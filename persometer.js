@@ -1,9 +1,8 @@
 const Persometer = config => {
 
     const CONTAINERID = config.container;
-    const QUESTIONS = config.questions;
-    const RESULTS = config.results; // should rename this
-    const POSSIBLE_RESULTS = RESULTS.length;
+    const STATEMENTS = config.statements;
+    const CATEGORIES = config.categories; // should rename this
 
     // todo: Myers-Briggs option: N "results" categories, +/- result determine each extreme, combine into 2^N types
 
@@ -13,16 +12,16 @@ const Persometer = config => {
      */
     const validate = () => {
         const tests = [
-            function questions_have_right_score_lengths() {
+            function statements_have_right_score_lengths() {
                 let pass = true;
-                Object.keys(QUESTIONS).forEach(q => {
-                    const scoreLength = QUESTIONS[q].scores.length;
-                    if (scoreLength != POSSIBLE_RESULTS) {
-                        console.error(`NOT OK: Invalid score length ${scoreLength} for question ${q}, should be ${POSSIBLE_RESULTS}`);
+                Object.keys(STATEMENTS).forEach(s => {
+                    const scoreLength = STATEMENTS[s].scores.length;
+                    if (scoreLength != CATEGORIES.length) {
+                        console.error(`NOT OK: Invalid score length ${scoreLength} for statement ${s}, should be ${CATEGORIES.length}`);
                         pass = false;
                     }
                 });
-                if (pass) { console.log("OK: question score lengths"); }
+                if (pass) { console.log("OK: statement score lengths"); }
             },
             function all_results_have_nonzero_score() {
                 const maxima = get_maximum_scores();
@@ -50,8 +49,8 @@ const Persometer = config => {
 
         const answers = [];
         const params = r.split("&");
-        params.forEach(q => {
-            const answer = q.split("=");
+        params.forEach(p => {
+            const answer = p.split("=");
             answers.push({name: answer[0], value: answer[1]})
         });
         return answers;
@@ -63,19 +62,19 @@ const Persometer = config => {
         window.history.pushState(null, document.title, url.href);
     };
 
-    const render_questions = (id) => {
+    const render_statements = (id) => {
         const div = document.getElementById(id);
         $(div).empty();
         const form = document.createElement("form");
         form.onsubmit = handle_submit.bind(this, form);
         div.append(form);
 
-        Object.keys(QUESTIONS).forEach(q => {
+        Object.keys(STATEMENTS).forEach(s => {
             $(form).append(`
-                <div class="question">
-                    <div class="question-text">${QUESTIONS[q].text}</div>
-                    Agree <input type="radio" name="${q}" value="1">
-                    Disagree <input type="radio" name="${q}" value="-1">
+                <div class="statement">
+                    <div class="statement-text">${STATEMENTS[s].text}</div>
+                    Agree <input type="radio" name="${s}" value="1">
+                    Disagree <input type="radio" name="${s}" value="-1">
                 </div>
             `);
         })
@@ -99,14 +98,13 @@ const Persometer = config => {
     };
 
     const add_scores = answers => {
-        const total = new Array(POSSIBLE_RESULTS).fill(0);
+        const total = new Array(CATEGORIES.length).fill(0);
 
-        // if skipped, the question just won't appear in this list, so effectively coefficient=0
+        // if skipped, the statement id just won't appear in this list, so effectively coefficient=0
         answers.forEach(answer => {
             const coefficient = Number(answer.value);
-            const scores = QUESTIONS[answer.name].scores;
-            console.log("c=", coefficient, "s=", scores);
-            for (i = 0; i < POSSIBLE_RESULTS; i++) {
+            const scores = STATEMENTS[answer.name].scores;
+            for (i = 0; i < CATEGORIES.length; i++) {
                 total[i] += coefficient * scores[i];
             }
         });
@@ -115,10 +113,10 @@ const Persometer = config => {
     };
 
     const get_maximum_scores = () => {
-        const maxima = new Array(POSSIBLE_RESULTS).fill(0);
-        Object.keys(QUESTIONS).forEach(q => {
-            for (i = 0; i < POSSIBLE_RESULTS; i++) {
-                maxima[i] += Math.abs(QUESTIONS[q].scores[i])
+        const maxima = new Array(CATEGORIES.length).fill(0);
+        Object.keys(STATEMENTS).forEach(s => {
+            for (i = 0; i < CATEGORIES.length; i++) {
+                maxima[i] += Math.abs(STATEMENTS[s].scores[i])
             }
         });
         return maxima;
@@ -130,7 +128,7 @@ const Persometer = config => {
 
         // then normalize
         const normalized = [];
-        for (i = 0; i < POSSIBLE_RESULTS; i++) {
+        for (i = 0; i < CATEGORIES.length; i++) {
             normalized.push(raw_total[i] / maxima[i]);
         }
 
@@ -141,7 +139,7 @@ const Persometer = config => {
     const get_best_result = scores => {
         // ignoring ties and using the first match
         const ibest = scores.indexOf(Math.max(...scores));
-        return RESULTS[ibest];
+        return CATEGORIES[ibest];
     };
 
     const render_best_match = (container, scores) => {
@@ -154,9 +152,9 @@ const Persometer = config => {
     const render_scores = (container, scores) => {
         $(container).append('<p>Scores!</p>');
         const normalized_scores = normalize_results(scores);
-        for (i = 0; i < POSSIBLE_RESULTS; i++) {
+        for (i = 0; i < CATEGORIES.length; i++) {
             const value = normalized_scores[i];
-            $(container).append(`<p><strong>${RESULTS[i].name}</strong>: ${score_meter_markup(value)}</p>`);
+            $(container).append(`<p><strong>${CATEGORIES[i].name}</strong>: ${score_meter_markup(value)}</p>`);
         }
     };
 
@@ -187,13 +185,13 @@ const Persometer = config => {
         if (answers) {
             render_result(CONTAINERID, answers);
         } else {
-            render_questions(CONTAINERID);
+            render_statements(CONTAINERID);
         }
     };
 
     const reset = () => {
         set_result_code("");
-        render_questions(CONTAINERID);
+        render_statements(CONTAINERID);
     };
 
     return {
