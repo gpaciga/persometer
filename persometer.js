@@ -85,7 +85,7 @@ const Persometer = config => {
     const render_result = (id, answers) => {
         const div = document.getElementById(id);
         $(div).empty();
-        $(div).append('<strong>Result!</strong><br/>')
+        $(div).append('<strong>Your result is:</strong><br/>')
         scores = add_scores(answers);
         render_best_match(div, scores);
         render_scores(div, scores);
@@ -145,13 +145,11 @@ const Persometer = config => {
 
     const render_best_match = (container, scores) => {
         const match = get_best_result(scores);
-        $(container).append('<p>Best match:</p>');
         $(container).append(`<p><strong>${match.name}</strong></p>`);
         $(container).append(`<p>${match.description}</p>`);
     };
 
     const render_scores = (container, scores) => {
-        $(container).append('<p>Scores!</p>');
         const normalized_scores = normalize_results(scores);
         for (i = 0; i < CATEGORIES.length; i++) {
             const value = normalized_scores[i];
