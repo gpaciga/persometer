@@ -273,7 +273,7 @@ const Persometer = config => {
         for (i = 0; i < PERSONAS.length; i++) {
             const value = normalized_scores[i];
             const percentage = (Math.abs(value)*100).toFixed(0) + '%'
-            const agreement = value > 0 ? "agreement" : "disagreement";
+            const agreement = value >= 0 ? "agreement" : "disagreement";
 
             markup += `
                 <tr class="persometer-breakdown-row">
