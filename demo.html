@@ -16,7 +16,7 @@ const statements = [
     {text: "Primary colours are the best colours.", scores: [1, -1, 1]},
 ];
 
-const categories = [
+const personas = [
     {id: "a", name: "Apple", description: "Round, red, and ready to eat.", img: ""},
     {id: "b", name: "Orange", description: "Round and peelable.", img: ""},
     {id: "c", name: "Banana", description: "Stays where you put it.", img: ""}
@@ -25,7 +25,7 @@ const categories = [
 quiz = Persometer({
     container: "container",
     statements: statements,
-    categories: categories,
+    personas: personas,
 });
 
 quiz.validate();

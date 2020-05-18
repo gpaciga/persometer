@@ -2,7 +2,7 @@ const Persometer = config => {
 
     const CONTAINERID = config.container;
     const STATEMENTS = config.statements;
-    const CATEGORIES = config.categories;
+    const PERSONAS = config.personas;
 
     // todo: make it look nice by default
     // todo: option to normalize scores 0-1 instead of -1,1
@@ -11,21 +11,23 @@ const Persometer = config => {
     // todo: option to specify whether all answers are required or not
     // todo: option to not normalize scores when picking the winner
     // todo: option to randomize statement order
-    // todo: Myers-Briggs option: N "results" categories, +/- result determine each extreme, combine into 2^N types
+    // todo: Myers-Briggs option: N personas, +/- result determine each extreme, combine into 2^N types
 
-    const CATEGORY_TO_INDEX = categories.reduce((map, category, index) => {
-        if (category.id) {
-            map[category.id] = index;
+    // Mappign to be used if we need to map scores to a persona by ID instead of index
+    const PERSONAID_TO_INDEX = PERSONAS.reduce((map, persona, index) => {
+        if (persona.id) {
+            map[persona.id] = index;
         }
         return map;
     }, {});
 
-    // If scores is given as an object, map it to an array using the key as a category id
+    // If scores is given as an object, map it to an array using the key as a persona id
+    // Don't like that this changes the input object
     statements.forEach(statement => {
         if (statement.scores instanceof Array) { return; }
-        const scores = Array(CATEGORIES.length).fill(0);
+        const scores = Array(PERSONAS.length).fill(0);
         Object.keys(statement.scores).forEach(key => {
-            const index = CATEGORY_TO_INDEX[key];
+            const index = PERSONAID_TO_INDEX[key];
             scores[index] = statement.scores[key];
         });
         statement.scores = scores;
@@ -41,8 +43,8 @@ const Persometer = config => {
                 let pass = true;
                 STATEMENTS.forEach(s => {
                     const scoreLength = s.scores.length;
-                    if (scoreLength != CATEGORIES.length) {
-                        console.error(`NOT OK: Invalid score length ${scoreLength} for statement ${s}, should be ${CATEGORIES.length}`);
+                    if (scoreLength != PERSONAS.length) {
+                        console.error(`NOT OK: Invalid score length ${scoreLength} for statement ${s}, should be ${PERSONAS.length}`);
                         pass = false;
                     }
                 });
@@ -57,18 +59,18 @@ const Persometer = config => {
                     console.log("OK: all results have some scores allocated");
                 }
             },
-            function category_ids_are_unique() {
+            function persona_ids_are_unique() {
                 let pass = true;
                 const foundIds = [];
-                CATEGORIES.forEach(category => {
-                    if (category.id && foundIds.indexOf(category.id) === -1) {
-                        foundIds.push(category.id);
+                PERSONAS.forEach(persona => {
+                    if (persona.id && foundIds.indexOf(persona.id) === -1) {
+                        foundIds.push(persona.id);
                     } else {
-                        console.error(`NOT OK: category id ${category.id} used multiple times`);
+                        console.error(`NOT OK: persona id ${persona.id} used multiple times`);
                         pass = false;
                     }
                 });
-                if (pass) { console.log("OK: category ids are unique"); }
+                if (pass) { console.log("OK: persona ids are unique"); }
             }
         ];
         tests.forEach(test => test());
@@ -142,7 +144,7 @@ const Persometer = config => {
 
     /**
      * Renders the result based on the user's answer, including the best match
-     * and the relative scores in each category.
+     * and the relative scores for each persona.
      * @param {string} id of the container to render into
      * @param {Object[]} answers the array of answers
      */
@@ -168,14 +170,14 @@ const Persometer = config => {
      * @param {Object[]} answers the array of answers
      */
     const add_scores = answers => {
-        const total = new Array(CATEGORIES.length).fill(0);
+        const total = new Array(PERSONAS.length).fill(0);
 
         // if skipped, the statement id just won't appear in this list, so effectively coefficient=0
         answers.forEach(answer => {
             const coefficient = Number(answer.value);
             const statement = STATEMENTS[Number(answer.name)];
             const scores = statement.scores;
-            for (i = 0; i < CATEGORIES.length; i++) {
+            for (i = 0; i < PERSONAS.length; i++) {
                 total[i] += coefficient * scores[i];
             }
         });
@@ -184,13 +186,13 @@ const Persometer = config => {
     };
 
     /**
-     * Returns an array containing the maximum possible score in each category,
+     * Returns an array containing the maximum possible score for each persona,
      * for use in normalizing the scales.
      */
     const get_maximum_scores = () => {
-        const maxima = new Array(CATEGORIES.length).fill(0);
+        const maxima = new Array(PERSONAS.length).fill(0);
         STATEMENTS.forEach(s => {
-            for (i = 0; i < CATEGORIES.length; i++) {
+            for (i = 0; i < PERSONAS.length; i++) {
                 maxima[i] += Math.abs(s.scores[i])
             }
         });
@@ -198,11 +200,11 @@ const Persometer = config => {
     };
 
     /**
-     * Normalizes the actually scores based on the maximum possible range in
-     * each category, independently. If the user agrees to every statement,
+     * Normalizes the actually scores based on the maximum possible range for
+     * each persona, independently. If the user agrees to every statement,
      * this will return an array of 1s. If the user disagrees with every
      * statement, this will return an array of -1s.
-     * @param {number[]} raw_total in each category
+     * @param {number[]} raw_total for each persona
      */
     const normalize_results = raw_total => {
         // need to calculate the range of each possible answer
@@ -210,7 +212,7 @@ const Persometer = config => {
 
         // then normalize
         const normalized = [];
-        for (i = 0; i < CATEGORIES.length; i++) {
+        for (i = 0; i < PERSONAS.length; i++) {
             normalized.push(raw_total[i] / maxima[i]);
         }
 
@@ -219,19 +221,19 @@ const Persometer = config => {
     };
 
     /**
-     * Returns the category object that the answers best match.
-     * @param {number[]} scores for each category
+     * Returns the persona object that the answers best match.
+     * @param {number[]} scores for each persona
      */
     const get_best_result = scores => {
         // ignoring ties and using the first match
         const ibest = scores.indexOf(Math.max(...scores));
-        return CATEGORIES[ibest];
+        return PERSONAS[ibest];
     };
 
     /**
-     * Renders a blurb for the user's highest category given the scores.
+     * Renders a blurb for the user's highest persona given the scores.
      * @param {Element} container to render the scores into
-     * @param {number[]} scores for each category
+     * @param {number[]} scores for each persona
      */
     const render_best_match = (container, scores) => {
         const match = get_best_result(scores);
@@ -240,15 +242,15 @@ const Persometer = config => {
     };
 
     /**
-     * Writes out the table of each possible category and how the person scored.
+     * Writes out the table of each possible persona and how the person scored.
      * @param {Element} container to render the scores into
-     * @param {number[]} scores for each category
+     * @param {number[]} scores for each persona
      */
     const render_scores = (container, scores) => {
         const normalized_scores = normalize_results(scores);
-        for (i = 0; i < CATEGORIES.length; i++) {
+        for (i = 0; i < PERSONAS.length; i++) {
             const value = normalized_scores[i];
-            $(container).append(`<p><strong>${CATEGORIES[i].name}</strong>: ${score_meter_markup(value)}</p>`);
+            $(container).append(`<p><strong>${PERSONAS[i].name}</strong>: ${score_meter_markup(value)}</p>`);
         }
     };
 
