@@ -1,0 +1,58 @@
+.persometer-statement {
+    display: flex;
+    margin: .5em;
+    align-items: stretch;
+}
+
+.persometer-statement-text {
+    background-color: #ddffff;
+    padding: .5em;
+    flex-grow: 1;
+}
+
+.persometer-statement-options {
+    padding: 0em .5em;
+    white-space: nowrap;
+    justify-content: center;
+}
+
+.persometer-option {
+    display: inline-block;
+    height: calc(100% - 1em);
+    padding: .5em;
+}
+
+.persometer-option + .persometer-option {
+    margin-left: .5em;
+}
+
+.persometer-agree {
+    background-color: lightgreen;
+}
+
+.persometer-disagree {
+    background-color: pink;
+}
+
+.persometer-button {
+    margin: .5em;
+    padding: 1em;
+    min-width: 10em;
+}
+
+.persometer-result {
+    padding: .5em;
+}
+
+.persometer-result p {
+    margin: 0em;
+}
+
+.persometer-result-name {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.persometer-breakdown td {
+    padding: .5em;
+}

@@ -11,6 +11,7 @@ const Persometer = config => {
     // todo: option to specify whether all answers are required or not
     // todo: option to not normalize scores when picking the winner
     // todo: option to randomize statement order
+    // todo: option to display both agreement and disagreement in meter instead of just net agreement
     // todo: Myers-Briggs option: N personas, +/- result determine each extreme, combine into 2^N types
 
     // Mappign to be used if we need to map scores to a persona by ID instead of index
@@ -127,19 +128,27 @@ const Persometer = config => {
         };
 
         form.onsubmit = handle_submit.bind(this, form);
+        form.className = "persometer";
         div.append(form);
 
         STATEMENTS.forEach((statement, index) => {
             $(form).append(`
-                <div class="statement">
-                    <div class="statement-text">${statement.text}</div>
-                    Agree <input type="radio" name="${index}" value="1">
-                    Disagree <input type="radio" name="${index}" value="-1">
+                <div class="persometer-statement">
+                    <div class="persometer-statement-text">${statement.text}</div>
+                    <div class="persometer-statement-options">
+                        <label class="persometer-option persometer-agree">
+                            Agree
+                            <input type="radio" name="${index}" value="1">
+                        </label><label class="persometer-option persometer-disagree">
+                            Disagree
+                            <input type="radio" name="${index}"value="-1">
+                        </span>
+                    </div>
                 </div>
             `);
         })
 
-        $(form).append('<input type="submit" />');
+        $(form).append('<input class="persometer-button" type="submit" />');
     };
 
     /**
@@ -151,13 +160,13 @@ const Persometer = config => {
     const render_result = (id, answers) => {
         const div = document.getElementById(id);
         $(div).empty();
-        $(div).append('<strong>Your result is:</strong><br/>')
         scores = add_scores(answers);
         render_best_match(div, scores);
         render_scores(div, scores);
 
         const resetButton = document.createElement('input');
         resetButton.type = "button";
+        resetButton.className = "persometer-button"
         resetButton.onclick = reset;
         resetButton.value = "Start over";
         $(div).append(resetButton);
@@ -237,8 +246,20 @@ const Persometer = config => {
      */
     const render_best_match = (container, scores) => {
         const match = get_best_result(scores);
-        $(container).append(`<p><strong>${match.name}</strong></p>`);
-        $(container).append(`<p>${match.description}</p>`);
+
+        let img = "";
+        if (match.image) {
+            img = `<img src="${match.image}" alt="" class="persometer-result-image" />`;
+        }
+
+        const markup = `
+            <div class="persometer-result">
+                ${img}
+                <p class="persometer-result-name">${match.name}</p>
+                <p class="persometer-result-desc">${match.description}</p>
+            </div>
+        `;
+        $(container).append(markup);
     };
 
     /**
@@ -248,10 +269,22 @@ const Persometer = config => {
      */
     const render_scores = (container, scores) => {
         const normalized_scores = normalize_results(scores);
+        let markup = `<table class="persometer-breakdown">`;
         for (i = 0; i < PERSONAS.length; i++) {
             const value = normalized_scores[i];
-            $(container).append(`<p><strong>${PERSONAS[i].name}</strong>: ${score_meter_markup(value)}</p>`);
+            const percentage = (Math.abs(value)*100).toFixed(0) + '%'
+            const agreement = value > 0 ? "agreement" : "disagreement";
+
+            markup += `
+                <tr class="persometer-breakdown-row">
+                    <td class="persometer-breakdown-persona">${PERSONAS[i].name}</td>
+                    <td class="persometer-breakdown-meter">${score_meter_markup(value)}</td>
+                    <td class="persometer-breakdown-text">${percentage} ${agreement}</td>
+                </tr>
+            `;
         }
+        markup += '</table>'
+        $(container).append(markup);
     };
 
     /**

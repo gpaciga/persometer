@@ -3,23 +3,24 @@
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="persometer.js"></script>
+    <link rel="stylesheet" type="text/css" href="persometer.css">
 </head>
 
 <h1>What fruit are you?</h1>
 
-<div id="container"></div>
+<div id="container" style="max-width: 50em"></div>
 <script type="text/javascript">
 
 const statements = [
     {text: "I like round things.", scores: [1, 1, -1]},
-    {text: "I enjoy peeling things.", scores: {"b": 1, "c": 1}},
+    {text: "I enjoy peeling things.", scores: {"org": 1, "ban": 1}},
     {text: "Primary colours are the best colours.", scores: [1, -1, 1]},
 ];
 
 const personas = [
-    {id: "a", name: "Apple", description: "Round, red, and ready to eat.", img: ""},
-    {id: "b", name: "Orange", description: "Round and peelable.", img: ""},
-    {id: "c", name: "Banana", description: "Stays where you put it.", img: ""}
+    {id: "apl", name: "Apple", description: "Round, red, and ready to eat.", img: ""},
+    {id: "org", name: "Orange", description: "Round and peelable.", img: ""},
+    {id: "ban", name: "Banana", description: "Stays where you put it.", img: ""}
 ]
 
 quiz = Persometer({
