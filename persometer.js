@@ -2,16 +2,34 @@ const Persometer = config => {
 
     const CONTAINERID = config.container;
     const STATEMENTS = config.statements;
-    const CATEGORIES = config.categories; // should rename this
+    const CATEGORIES = config.categories;
 
     // todo: make it look nice by default
-    // todo: allow inputing spares scores, probably by mapping to category IDs
     // todo: option to normalize scores 0-1 instead of -1,1
     // todo: option so disagree doesn't subtract the scores
     // todo: option to use either/or instead of agree/disagree (since the math is all the same)
     // todo: option to specify whether all answers are required or not
     // todo: option to not normalize scores when picking the winner
+    // todo: option to randomize statement order
     // todo: Myers-Briggs option: N "results" categories, +/- result determine each extreme, combine into 2^N types
+
+    const CATEGORY_TO_INDEX = categories.reduce((map, category, index) => {
+        if (category.id) {
+            map[category.id] = index;
+        }
+        return map;
+    }, {});
+
+    // If scores is given as an object, map it to an array using the key as a category id
+    statements.forEach(statement => {
+        if (statement.scores instanceof Array) { return; }
+        const scores = Array(CATEGORIES.length).fill(0);
+        Object.keys(statement.scores).forEach(key => {
+            const index = CATEGORY_TO_INDEX[key];
+            scores[index] = statement.scores[key];
+        });
+        statement.scores = scores;
+    });
 
     /**
      * Run some checks of the input parameters above to make sure they're all OK
@@ -38,6 +56,19 @@ const Persometer = config => {
                 } else {
                     console.log("OK: all results have some scores allocated");
                 }
+            },
+            function category_ids_are_unique() {
+                let pass = true;
+                const foundIds = [];
+                CATEGORIES.forEach(category => {
+                    if (category.id && foundIds.indexOf(category.id) === -1) {
+                        foundIds.push(category.id);
+                    } else {
+                        console.error(`NOT OK: category id ${category.id} used multiple times`);
+                        pass = false;
+                    }
+                });
+                if (pass) { console.log("OK: category ids are unique"); }
             }
         ];
         tests.forEach(test => test());
