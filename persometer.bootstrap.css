@@ -1,0 +1,14 @@
+/* .persometer .btn-secondary {
+    background: lightgrey;
+    color: black;
+} */
+
+.persometer .btn-secondary:not(:disabled):not(.disabled).active.persometer-agree {
+    background: var(--green);
+    color: white;
+}
+
+.persometer .btn-secondary:not(:disabled):not(.disabled).active.persometer-disagree {
+    background: var(--red);
+    color: white;
+}

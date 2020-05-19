@@ -5,6 +5,7 @@ const Persometer = config => {
     const PERSONAS = config.personas;
 
     // todo: make it look nice by default
+    // todo: handle ties
     // todo: option to normalize scores 0-1 instead of -1,1
     // todo: option so disagree doesn't subtract the scores
     // todo: option to use either/or instead of agree/disagree (since the math is all the same)
@@ -135,20 +136,21 @@ const Persometer = config => {
             $(form).append(`
                 <div class="persometer-statement">
                     <div class="persometer-statement-text">${statement.text}</div>
-                    <div class="persometer-statement-options">
-                        <label class="persometer-option persometer-agree">
-                            Agree
-                            <input type="radio" name="${index}" value="1">
-                        </label><label class="persometer-option persometer-disagree">
-                            Disagree
-                            <input type="radio" name="${index}"value="-1">
-                        </span>
+
+                    <div class="btn-group btn-group-toggle persometer-statement-options" data-toggle="buttons">
+                        <label class="btn btn-secondary persometer-option persometer-agree">
+                            <input type="radio" name="${index}" id="${index}" value="1"> Agree
+                        </label>
+                        <label class="btn btn-secondary persometer-option persometer-disagree">
+                            <input type="radio" name="${index}" id="${index}" value="-1"> Disagree
+                        </label>
                     </div>
+
                 </div>
             `);
         })
 
-        $(form).append('<input class="persometer-button" type="submit" />');
+        $(form).append('<input class="btn btn-primary btn-block persometer-button" type="submit" />');
     };
 
     /**
@@ -166,7 +168,7 @@ const Persometer = config => {
 
         const resetButton = document.createElement('input');
         resetButton.type = "button";
-        resetButton.className = "persometer-button"
+        resetButton.className = "btn btn-primary btn-block persometer-button"
         resetButton.onclick = reset;
         resetButton.value = "Start over";
         $(div).append(resetButton);
