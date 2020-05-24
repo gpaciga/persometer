@@ -110,12 +110,22 @@ const Persometer = config => {
     };
 
     /**
+     * Clear the contents of the Persometer container div, returning the new
+     * container that we can append to.
+     */
+    const reset_contents = (id) => {
+        const div = document.getElementById(id);
+        $(div).empty();
+        $(div).append(`<div id="persometer-container-${id}" class="container persometer"></div>`);
+        return $(`#persometer-container-${id}`);
+    }
+
+    /**
      * Renders all the agree/disagree statements as a submittable form.
      * @param {string} id of the container to render into
      */
     const render_statements = (id) => {
-        const div = document.getElementById(id);
-        $(div).empty();
+        const container = reset_contents(id);
         const form = document.createElement("form");
 
         // While submitting a form would put the answers into the query params
@@ -129,15 +139,14 @@ const Persometer = config => {
         };
 
         form.onsubmit = handle_submit.bind(this, form);
-        form.className = "persometer";
-        div.append(form);
+        container.append(form);
 
         STATEMENTS.forEach((statement, index) => {
             $(form).append(`
-                <div class="persometer-statement">
-                    <div class="persometer-statement-text">${statement.text}</div>
+                <div class="row persometer-statement">
+                    <div class="col-md-8 col-sm-7 persometer-statement-text">${statement.text}</div>
 
-                    <div class="btn-group btn-group-toggle persometer-statement-options" data-toggle="buttons">
+                    <div class="col-md-4 col-sm-5 btn-group btn-group-toggle persometer-statement-options" data-toggle="buttons">
                         <label class="btn btn-secondary persometer-option persometer-agree">
                             <input type="radio" name="${index}" id="${index}" value="1"> Agree
                         </label>
@@ -150,7 +159,7 @@ const Persometer = config => {
             `);
         })
 
-        $(form).append('<input class="btn btn-primary btn-block persometer-button" type="submit" />');
+        $(form).append('<div class="row persometer-submit"><div class="col-12"><input class="btn btn-primary btn-block persometer-button" type="submit" /></div></div>');
     };
 
     /**
@@ -160,18 +169,17 @@ const Persometer = config => {
      * @param {Object[]} answers the array of answers
      */
     const render_result = (id, answers) => {
-        const div = document.getElementById(id);
-        $(div).empty();
+        const container = reset_contents(id);
         scores = add_scores(answers);
-        render_best_match(div, scores);
-        render_scores(div, scores);
+        render_best_match(container, scores);
+        render_scores(container, scores);
 
         const resetButton = document.createElement('input');
         resetButton.type = "button";
         resetButton.className = "btn btn-primary btn-block persometer-button"
         resetButton.onclick = reset;
         resetButton.value = "Start over";
-        $(div).append(resetButton);
+        $(container).append(resetButton);
     };
 
     /**

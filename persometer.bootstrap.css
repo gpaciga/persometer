@@ -12,3 +12,9 @@
     background: var(--red);
     color: white;
 }
+
+.persometer-statement,
+.persometer-submit {
+    padding-top: .5em;
+    padding-bottom: .5em;
+}
