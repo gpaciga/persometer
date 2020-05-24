@@ -53,6 +53,27 @@
     font-weight: bold;
 }
 
-.persometer-breakdown td {
+.persometer-breakdown {
     padding: .5em;
+}
+
+.persometer-breakdown-row {
+    display: flex;
+}
+
+/* .persometer-breakdown-row div {
+    flex-grow: 1;
+} */
+
+.persometer-breakdown-persona {
+    width: 25%;
+}
+
+.persometer-breakdown-text {
+    width: 25%;
+}
+
+.persometer-breakdown-meter {
+    width: 50%;
+    wrap: nowrap;
 }

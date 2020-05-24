@@ -6,6 +6,7 @@ const Persometer = config => {
 
     // todo: make it look nice by default
     // todo: handle ties
+    // todo: option to include title question in the markup
     // todo: option to normalize scores 0-1 instead of -1,1
     // todo: option so disagree doesn't subtract the scores
     // todo: option to use either/or instead of agree/disagree (since the math is all the same)
@@ -14,6 +15,8 @@ const Persometer = config => {
     // todo: option to randomize statement order
     // todo: option to display both agreement and disagreement in meter instead of just net agreement
     // todo: Myers-Briggs option: N personas, +/- result determine each extreme, combine into 2^N types
+    // bug: back button might not work when on result page?
+    // bug: in bootstrap, meter centers don't align perfectly because of asymmetric calc()
 
     // Mappign to be used if we need to map scores to a persona by ID instead of index
     const PERSONAID_TO_INDEX = PERSONAS.reduce((map, persona, index) => {
@@ -174,11 +177,21 @@ const Persometer = config => {
         render_best_match(container, scores);
         render_scores(container, scores);
 
+
         const resetButton = document.createElement('input');
         resetButton.type = "button";
         resetButton.className = "btn btn-primary btn-block persometer-button"
         resetButton.onclick = reset;
         resetButton.value = "Start over";
+
+        $(container).append(`
+            <div class="row persometer-reset">
+                <div class="col-12">`,
+                    resetButton,
+                `</div>
+            </div>
+        `);
+
         $(container).append(resetButton);
     };
 
@@ -259,14 +272,16 @@ const Persometer = config => {
 
         let img = "";
         if (match.image) {
-            img = `<img src="${match.image}" alt="" class="persometer-result-image" />`;
+            img = `<div class="col"><img src="${match.image}" alt="" class="persometer-result-image" /></div>`;
         }
 
         const markup = `
-            <div class="persometer-result">
+            <div class="row persometer-result">
                 ${img}
-                <p class="persometer-result-name">${match.name}</p>
-                <p class="persometer-result-desc">${match.description}</p>
+                <div class="col">
+                    <h3 class="persometer-result-name">${match.name}</h3>
+                    <p class="persometer-result-desc">${match.description}</p>
+                </div>
             </div>
         `;
         $(container).append(markup);
@@ -279,18 +294,18 @@ const Persometer = config => {
      */
     const render_scores = (container, scores) => {
         const normalized_scores = normalize_results(scores);
-        let markup = `<table class="persometer-breakdown">`;
+        let markup = `<div class="persometer-breakdown">`;
         for (i = 0; i < PERSONAS.length; i++) {
             const value = normalized_scores[i];
             const percentage = (Math.abs(value)*100).toFixed(0) + '%'
             const agreement = value >= 0 ? "agreement" : "disagreement";
 
             markup += `
-                <tr class="persometer-breakdown-row">
-                    <td class="persometer-breakdown-persona">${PERSONAS[i].name}</td>
-                    <td class="persometer-breakdown-meter">${score_meter_markup(value)}</td>
-                    <td class="persometer-breakdown-text">${percentage} ${agreement}</td>
-                </tr>
+                <div class="row persometer-breakdown-row">
+                    <div class="col-md-2 persometer-breakdown-persona">${PERSONAS[i].name}</div>
+                    <div class="col-md-4 persometer-breakdown-text">${percentage} ${agreement}</div>
+                    <div class="col-md-6 persometer-breakdown-meter">${score_meter_markup(value)}</div>
+                </div>
             `;
         }
         markup += '</table>'
@@ -304,10 +319,10 @@ const Persometer = config => {
     const score_meter_markup = value => {
 
         // Not very accessible since this is pure CSS, no readable text yet
-        const empty_left = `<span style="display: inline-block; height: 10px; width: 100px; margin: 0; background-color: lightgrey; border-right: 1px solid black"></span>`;
-        const empty_right = `<span style="display: inline-block; height: 10px; width: 100px; margin: 0; background-color: lightgrey; border-left: 1px solid black"></span>`;
-        const score = `<span style="display: inline-block; height: 10px; background-color: red; width: ${Math.abs(value)*100}px; margin: 0;"></span>`;
-        const remaining = `<span style="display: inline-block; height: 10px; background-color: lightgrey; width: ${100 - Math.abs(value)*100}px; margin: 0;"></span>`;
+        const empty_left = `<span style="display: inline-block; height: 100%; width: calc(50% - 1px); margin: 0; background-color: lightgrey; border-right: 1px solid black"></span>`;
+        const empty_right = `<span style="display: inline-block; height: 100%; width: calc(50% - 1px); margin: 0; background-color: lightgrey; border-left: 1px solid black"></span>`;
+        const score = `<span style="display: inline-block; height: 100%; background-color: red; width: ${Math.abs(value)*50}%; margin: 0;"></span>`;
+        const remaining = `<span style="display: inline-block; height: 100%; background-color: lightgrey; width: ${50 - Math.abs(value)*50}%; margin: 0;"></span>`;
 
         let meter = "";
         if (value > 0) {
@@ -319,7 +334,7 @@ const Persometer = config => {
         }
 
         return `
-            <span style="height: 10px; width: 201px; display: inline-block">${meter}</span>
+            <span style="height: 80%; width: 100%; display: inline-block">${meter}</span>
         `;
     };
 

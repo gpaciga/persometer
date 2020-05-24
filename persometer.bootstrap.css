@@ -14,7 +14,9 @@
 }
 
 .persometer-statement,
-.persometer-submit {
+.persometer-submit,
+.persometer-reset,
+.persometer-breakdown {
     padding-top: .5em;
     padding-bottom: .5em;
 }
