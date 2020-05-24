@@ -332,13 +332,14 @@ const Persometer = config => {
         // Not very accessible since this is pure CSS, no readable text yet
         const empty_left = `<span style="display: inline-block; height: 100%; width: calc(50% - 1px); margin: 0; background-color: lightgrey; border-right: 1px solid black"></span>`;
         const empty_right = `<span style="display: inline-block; height: 100%; width: calc(50% - 1px); margin: 0; background-color: lightgrey; border-left: 1px solid black"></span>`;
-        const score = `<span style="display: inline-block; height: 100%; background-color: red; width: ${Math.abs(value)*50}%; margin: 0;"></span>`;
         const remaining = `<span style="display: inline-block; height: 100%; background-color: lightgrey; width: ${50 - Math.abs(value)*50}%; margin: 0;"></span>`;
 
         let meter = "";
         if (value > 0) {
+            const score = `<span style="display: inline-block; height: 100%; background-color: var(--green, green); width: ${Math.abs(value)*50}%; margin: 0;"></span>`;
             meter = `${empty_left}${score}${remaining}`;
         } else if (value < 0) {
+            const score = `<span style="display: inline-block; height: 100%; background-color: var(--red, red); width: ${Math.abs(value)*50}%; margin: 0;"></span>`;
             meter = `${remaining}${score}${empty_right}`;
         } else {
             meter = `${empty_left}${remaining}`;
