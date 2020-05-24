@@ -15,7 +15,6 @@ const Persometer = config => {
     // todo: option to display both agreement and disagreement in meter instead of just net agreement
     // todo: Myers-Briggs option: N personas, +/- result determine each extreme, combine into 2^N types
     // bug: back button might not work when on result page?
-    // bug: in bootstrap, meter centers don't align perfectly because of asymmetric calc()
 
     // Mappign to be used if we need to map scores to a persona by ID instead of index
     const PERSONAID_TO_INDEX = PERSONAS.reduce((map, persona, index) => {
@@ -331,7 +330,7 @@ const Persometer = config => {
 
         // Not very accessible since this is pure CSS, no readable text yet
         const empty_left = `<span style="display: inline-block; height: 100%; width: calc(50% - 1px); margin: 0; background-color: lightgrey; border-right: 1px solid black"></span>`;
-        const empty_right = `<span style="display: inline-block; height: 100%; width: calc(50% - 1px); margin: 0; background-color: lightgrey; border-left: 1px solid black"></span>`;
+        const empty_right = `<span style="display: inline-block; height: 100%; width: 50%; margin: 0; background-color: lightgrey;"></span>`;
         const remaining = `<span style="display: inline-block; height: 100%; background-color: lightgrey; width: ${50 - Math.abs(value)*50}%; margin: 0;"></span>`;
 
         let meter = "";
@@ -339,7 +338,7 @@ const Persometer = config => {
             const score = `<span style="display: inline-block; height: 100%; background-color: var(--green, green); width: ${Math.abs(value)*50}%; margin: 0;"></span>`;
             meter = `${empty_left}${score}${remaining}`;
         } else if (value < 0) {
-            const score = `<span style="display: inline-block; height: 100%; background-color: var(--red, red); width: ${Math.abs(value)*50}%; margin: 0;"></span>`;
+            const score = `<span style="display: inline-block; height: 100%; background-color: var(--red, red); width: calc(${Math.abs(value)*50}% - 1px); border-right: 1px solid black; margin: 0;"></span>`;
             meter = `${remaining}${score}${empty_right}`;
         } else {
             meter = `${empty_left}${remaining}`;
