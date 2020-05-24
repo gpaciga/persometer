@@ -3,10 +3,9 @@ const Persometer = config => {
     const CONTAINERID = config.container;
     const STATEMENTS = config.statements;
     const PERSONAS = config.personas;
+    const OPTIONS = config.options || {};
 
-    // todo: make it look nice by default
     // todo: handle ties
-    // todo: option to include title question in the markup
     // todo: option to normalize scores 0-1 instead of -1,1
     // todo: option so disagree doesn't subtract the scores
     // todo: option to use either/or instead of agree/disagree (since the math is all the same)
@@ -120,7 +119,19 @@ const Persometer = config => {
         const div = document.getElementById(id);
         $(div).empty();
         $(div).append(`<div id="persometer-container-${id}" class="container persometer"></div>`);
-        return $(`#persometer-container-${id}`);
+        const container = $(`#persometer-container-${id}`);
+
+        if (OPTIONS.title) {
+            $(container).append(`
+                <div class="row">
+                    <div class="col-12">
+                        ${OPTIONS.title}
+                    </div>
+                </div>
+            `);
+        }
+
+        return container;
     }
 
     /**

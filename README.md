@@ -1,6 +1,6 @@
 # Persometer
 
-A JavaScript library for creating personality tests based on agree/disagree statements. Rhymes with "thermometer".
+A JavaScript library for creating personality tests or other decision-making surveys based on agree/disagree statements. Rhymes with "thermometer".
 
 The main features are:
 
@@ -57,4 +57,23 @@ Personas is an array of personality types that the user is being sorted into.
 
 ### Additional options
 
-None yet.
+An optional 4th config object, `options`, can tweak the behaviour further. For example:
+
+```
+const options = {
+    title: "..."
+};
+const test = Persometer({ container, statements, personas, options });
+```
+
+Available options are:
+
+| Option   | Type | Behaviour |
+| -------- | ---- | --------- |
+| `title`  | String | Adds additional markup at the top of the container, e.g. to display the question being answered. |
+
+### Styling
+
+The included `demo.html` uses the provided `persometer.css` to provide some very minimal styling.
+
+Bootstrap is supported, shown in `demo.bootstrap.html`. In this case, use the included `persometer.bootstrap.css`.

@@ -12,8 +12,6 @@
     <link rel="stylesheet" type="text/css" href="persometer.bootstrap.css">
 </head>
 
-<h1>What fruit are you?</h1>
-
 <div id="container" style="margin: 1em"></div>
 <script type="text/javascript">
 
@@ -33,6 +31,9 @@ quiz = Persometer({
     container: "container",
     statements: statements,
     personas: personas,
+    options: {
+        title: "<h1>What fruit are you?</h1>"
+    }
 });
 
 quiz.validate();
