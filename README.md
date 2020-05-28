@@ -11,7 +11,7 @@ Requires JQuery and a modern browser.
 
 See `demo.html` for an example.
 
-## Usage and configuration
+## Usage
 
 A new personality test is initialized by passing a config object with three required parameters:
 
@@ -22,11 +22,20 @@ test.render();
 
 where `container` is the `id` of the element into which the test will render.
 
-Optionally, a validation function is provided that will test your configuration and output any errors to the console.
+Optionally, there are two helper functions for survey writers:
+
+1. A validation function is provided that will test your configuration and output any errors to the console. This is not an exhaustive test but just validates some basics.
+2. A statistics function that will estimate the distribution of personas your users will get if they answer each statement at random.
 
 ```
 test.validate();
+test.statistics();
 ```
+
+Check the console log for the output of these.
+
+
+## Configuration
 
 ### Statements
 

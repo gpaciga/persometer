@@ -15,6 +15,7 @@ const Persometer = config => {
     // todo: option to display both agreement and disagreement in meter instead of just net agreement
     // todo: Myers-Briggs option: N personas, +/- result determine each extreme, combine into 2^N types
     // bug: back button might not work when on result page?
+    // bug?: get_best_result isn't using normalized score
 
     // Mappign to be used if we need to map scores to a persona by ID instead of index
     const PERSONAID_TO_INDEX = PERSONAS.reduce((map, persona, index) => {
@@ -47,19 +48,19 @@ const Persometer = config => {
                 STATEMENTS.forEach(s => {
                     const scoreLength = s.scores.length;
                     if (scoreLength != PERSONAS.length) {
-                        console.error(`NOT OK: Invalid score length ${scoreLength} for statement ${s}, should be ${PERSONAS.length}`);
+                        console.error(`Persometer: NOT OK: Invalid score length ${scoreLength} for statement ${s}, should be ${PERSONAS.length}`);
                         pass = false;
                     }
                 });
-                if (pass) { console.log("OK: statement score lengths"); }
+                if (pass) { console.log("Persometer: OK: statement score lengths"); }
             },
             function all_results_have_nonzero_score() {
                 const maxima = get_maximum_scores();
                 const zeros = maxima.filter(x => x == 0);
                 if (zeros.length > 0) {
-                    console.error("NOT OK: Found zeros in the maximum scores:", maxima);
+                    console.error("Persometer: NOT OK: Found zeros in the maximum scores:", maxima);
                 } else {
-                    console.log("OK: all results have some scores allocated");
+                    console.log("Persometer: OK: all results have some scores allocated");
                 }
             },
             function persona_ids_are_unique() {
@@ -69,15 +70,71 @@ const Persometer = config => {
                     if (persona.id && foundIds.indexOf(persona.id) === -1) {
                         foundIds.push(persona.id);
                     } else {
-                        console.error(`NOT OK: persona id ${persona.id} used multiple times`);
+                        console.error(`Persometer: NOT OK: persona id ${persona.id} used multiple times`);
                         pass = false;
                     }
                 });
-                if (pass) { console.log("OK: persona ids are unique"); }
+                if (pass) { console.log("Persometer: OK: persona ids are unique"); }
             }
         ];
         tests.forEach(test => test());
     };
+
+    /**
+     * Print out some estimates for what the population distribution is likely to be.
+     * This is a clumsy way of making sure that you can have a good variety of winners.
+     */
+    const statistics = (sampleSize) => {
+        let maxIterations = sampleSize || 1000;
+        const nCombinations = 2**STATEMENTS.length; // assumes all questions answered, no skips
+        let nIterations = nCombinations;
+        let doRandom = false;
+
+        if (nCombinations > maxIterations) {
+            console.log(`Persometer: There are ${nCombinations} possible answer combinations, will randomly sample ${maxIterations}`);
+            nIterations = maxIterations;
+            doRandom = true;
+        } else {
+            console.log(`Persometer: There are ${nCombinations} possible answer combinations, will tabulate all of them`);
+        }
+
+        // initialize an object with 0 count for every persona
+        const counts = PERSONAS.reduce((acc, persona) => {
+            acc[persona.name] = 0;
+            return acc;
+        }, {});
+
+        // get the best match for each iteration and add it to the tally
+        for (let i = 0; i < nIterations ; i++) {
+            let combinationIndex = doRandom ? Math.floor(Math.random()*(nCombinations + 1)) : i;
+
+            // map a combination number into an array of 1s and 0s (for agrees/disagrees)
+            let values = combinationIndex.toString(2).split("");
+            const extraPaddingNeeded = STATEMENTS.length - values.length;
+            for (let j = 0; j < extraPaddingNeeded; j++) {
+                values.unshift("0");
+            }
+
+            // create the equivalent array of answers [{name: statement_names, value: +1/-1}]
+            const answers = [];
+            STATEMENTS.forEach((statement, index) => {
+                answers.push({
+                    name: index, // probably should not just be using the index
+                    value: values[index] == "1" ? 1 : -1
+                })
+            });
+
+            const score = add_scores(answers);
+            const match = get_best_result(score);
+            counts[match.name] += 1;
+        }
+
+        console.log("Persometer: Expected persona distribution if all statements answered at random:");
+        Object.keys(counts).forEach(name => {
+            counts[name] = counts[name]/nIterations * 100;
+            console.log(`Persometer:    ${counts[name].toFixed(2)}%  ${name}`);
+        });
+    }
 
     /**
      * Checks if there's a result code in the URL's query parameters, and if so
@@ -374,5 +431,6 @@ const Persometer = config => {
         render: render,
         reset: reset,
         validate: validate,
+        statistics: statistics,
     }
 };
