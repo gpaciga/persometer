@@ -1,0 +1,23 @@
+{
+  "name": "persometer",
+  "version": "0.0.1",
+  "description": "A library for creating personality tests or other decision-making surveys based on agree/disagree statements.",
+  "main": "persometer.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gpaciga/persometer.git"
+  },
+  "author": "Gregory Paciga",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/gpaciga/persometer/issues"
+  },
+  "homepage": "https://github.com/gpaciga/persometer#readme",
+  "devDependencies": {
+    "backstopjs": "^5.0.1",
+    "jest": "^26.1.0"
+  }
+}

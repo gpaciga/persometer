@@ -1,0 +1,111 @@
+{
+    "id": "persometer",
+    "viewports": [
+      {
+        "label": "phone",
+        "width": 320,
+        "height": 480
+      },
+      {
+        "label": "tablet",
+        "width": 1024,
+        "height": 768
+      }
+    ],
+    "onReadyScript": "puppet/onReady.js",
+    "scenarios": [
+      {
+        "label": "Bootstrap Agree",
+        "cookiePath": "",
+        "url": "file:///home/gpaciga/persometer/demo.bootstrap.html",
+        "referenceUrl": "",
+        "readyEvent": "",
+        "readySelector": "",
+        "delay": 0,
+        "hideSelectors": [],
+        "removeSelectors": [],
+        "hoverSelector": "",
+        "clickSelector": ".persometer-statement:nth-child(1) .persometer-agree",
+        "postInteractionWait": 0,
+        "selectors": [],
+        "selectorExpansion": true,
+        "expect": 0,
+        "misMatchThreshold" : 0.1,
+        "requireSameDimensions": true
+      },
+      {
+        "label": "Bootstrap Disagree",
+        "cookiePath": "",
+        "url": "file:///home/gpaciga/persometer/demo.bootstrap.html",
+        "referenceUrl": "",
+        "readyEvent": "",
+        "readySelector": "",
+        "delay": 0,
+        "hideSelectors": [],
+        "removeSelectors": [],
+        "hoverSelector": "",
+        "clickSelector": ".persometer-statement:nth-child(1) .persometer-disagree",
+        "postInteractionWait": 0,
+        "selectors": [],
+        "selectorExpansion": true,
+        "expect": 0,
+        "misMatchThreshold" : 0.1,
+        "requireSameDimensions": true
+      }, 
+      {
+        "label": "Bootstrap neutral, some agree, full disagree",
+        "cookiePath": "",
+        "url": "file:///home/gpaciga/persometer/demo.bootstrap.html?r=0%3D1%261%3D-1%262%3D-1",
+        "referenceUrl": "",
+        "readyEvent": "",
+        "readySelector": "",
+        "delay": 0,
+        "hideSelectors": [],
+        "removeSelectors": [],
+        "hoverSelector": "",
+        "clickSelector": "",
+        "postInteractionWait": 0,
+        "selectors": [],
+        "selectorExpansion": true,
+        "expect": 0,
+        "misMatchThreshold" : 0.1,
+        "requireSameDimensions": true
+      }, 
+      {
+        "label": "Bootstrap some disagree, full agree",
+        "cookiePath": "",
+        "url": "file:///home/gpaciga/persometer/demo.bootstrap.html?r=0%3D1%261%3D1%262%3D-1",
+        "referenceUrl": "",
+        "readyEvent": "",
+        "readySelector": "",
+        "delay": 0,
+        "hideSelectors": [],
+        "removeSelectors": [],
+        "hoverSelector": "",
+        "clickSelector": "",
+        "postInteractionWait": 0,
+        "selectors": [],
+        "selectorExpansion": true,
+        "expect": 0,
+        "misMatchThreshold" : 0.1,
+        "requireSameDimensions": true
+      }
+    ],
+    "paths": {
+      "bitmaps_reference": "backstop/reference",
+      "bitmaps_test": "backstop/test",
+      "engine_scripts": "backstop/scripts",
+      "html_report": "backstop/html",
+      "ci_report": "backstop/ci"
+    },
+    "report": ["browser"],
+    "engine": "puppeteer",
+    "engineOptions": {
+      "args": ["--no-sandbox"]
+    },
+    "asyncCaptureLimit": 5,
+    "asyncCompareLimit": 50,
+    "debug": false,
+    "debugWindow": false
+  }
+  
