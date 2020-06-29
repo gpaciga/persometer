@@ -17,7 +17,7 @@
       {
         "label": "Bootstrap Agree",
         "cookiePath": "",
-        "url": "file:///home/gpaciga/persometer/demo.bootstrap.html",
+        "url": "file:///home/gpaciga/persometer/demo/demo.bootstrap.html",
         "referenceUrl": "",
         "readyEvent": "",
         "readySelector": "",
@@ -36,7 +36,7 @@
       {
         "label": "Bootstrap Disagree",
         "cookiePath": "",
-        "url": "file:///home/gpaciga/persometer/demo.bootstrap.html",
+        "url": "file:///home/gpaciga/persometer/demo/demo.bootstrap.html",
         "referenceUrl": "",
         "readyEvent": "",
         "readySelector": "",
@@ -55,7 +55,7 @@
       {
         "label": "Bootstrap neutral, some agree, full disagree",
         "cookiePath": "",
-        "url": "file:///home/gpaciga/persometer/demo.bootstrap.html?r=0%3D1%261%3D-1%262%3D-1",
+        "url": "file:///home/gpaciga/persometer/demo/demo.bootstrap.html?r=0%3D1%261%3D-1%262%3D-1",
         "referenceUrl": "",
         "readyEvent": "",
         "readySelector": "",
@@ -74,7 +74,7 @@
       {
         "label": "Bootstrap some disagree, full agree",
         "cookiePath": "",
-        "url": "file:///home/gpaciga/persometer/demo.bootstrap.html?r=0%3D1%261%3D1%262%3D-1",
+        "url": "file:///home/gpaciga/persometer/demo/demo.bootstrap.html?r=0%3D1%261%3D1%262%3D-1",
         "referenceUrl": "",
         "readyEvent": "",
         "readySelector": "",
@@ -103,8 +103,8 @@
     "engineOptions": {
       "args": ["--no-sandbox"]
     },
-    "asyncCaptureLimit": 5,
-    "asyncCompareLimit": 50,
+    "asyncCaptureLimit": 1,
+    "asyncCompareLimit": 1,
     "debug": false,
     "debugWindow": false
   }

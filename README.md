@@ -9,7 +9,7 @@ The main features are:
 
 Requires JQuery and a modern browser.
 
-See `demo.html` for an example.
+Simply include `persometer.js` and you're ready to start. See `demo.html` for some examples, including some style sheets.
 
 ## Usage
 

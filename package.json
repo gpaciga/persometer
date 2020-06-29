@@ -2,9 +2,10 @@
   "name": "persometer",
   "version": "0.0.1",
   "description": "A library for creating personality tests or other decision-making surveys based on agree/disagree statements.",
-  "main": "persometer.js",
+  "private": true,
   "scripts": {
-    "test": "jest"
+    "build": "cp src/persometer.js persometer.js",
+    "test": "backstop test"
   },
   "repository": {
     "type": "git",
