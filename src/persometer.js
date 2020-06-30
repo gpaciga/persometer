@@ -434,3 +434,5 @@ const Persometer = config => {
         statistics: statistics,
     }
 };
+
+module.exports = Persometer;

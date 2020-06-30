@@ -4,8 +4,8 @@
   "description": "A library for creating personality tests or other decision-making surveys based on agree/disagree statements.",
   "private": true,
   "scripts": {
-    "build": "cp src/persometer.js persometer.js",
-    "test": "backstop test"
+    "build": "webpack",
+    "test": "jest && backstop test"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,8 @@
   "homepage": "https://github.com/gpaciga/persometer#readme",
   "devDependencies": {
     "backstopjs": "^5.0.1",
-    "jest": "^26.1.0"
+    "jest": "^26.1.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
   }
 }
